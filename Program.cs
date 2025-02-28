@@ -13,13 +13,13 @@ namespace PathTrackingSimulation
             Application.SetCompatibleTextRenderingDefault(false);
 
             //CONTROLLER: Baseline, Stanley or PurePursuit
-            ControllerType selectedController = ControllerType.Baseline;
+            // ControllerType selectedController = ControllerType.Baseline;
             // ControllerType selectedController = ControllerType.Stanley;
-            // ControllerType selectedController = ControllerType.PurePursuit;
+            ControllerType selectedController = ControllerType.PurePursuit;
 
             //PATH SHAPE: straight, curved or zigzag
-            // PointF[] selectedPath = PathGenerator.CreateStraightPath(new PointF(50, 300), new PointF(800, 300));
-            PointF[] selectedPath = PathGenerator.CreateCurvedPath(new PointF(50, 300), new PointF(800, 300));
+            PointF[] selectedPath = PathGenerator.CreateStraightPath(new PointF(50, 300), new PointF(800, 300));
+            // PointF[] selectedPath = PathGenerator.CreateCurvedPath(new PointF(50, 300), new PointF(800, 300));
             // PointF[] selectedPath = PathGenerator.GenerateZigzagPath(750, 80, 50);
 
             //SET SPEED
