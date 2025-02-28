@@ -10,8 +10,8 @@ namespace PathTrackingSimulation
     public enum ControllerType
     {
         Baseline,
-        Stanley,
-        PurePursuit
+        ImprovedStanley,
+        OldStanley
     }
 
     public class PathTrackingForm : Form
@@ -51,8 +51,8 @@ namespace PathTrackingSimulation
 
             controller = controllerType switch
             {
-                ControllerType.Stanley => new StanleyController(),
-                ControllerType.PurePursuit => new PurePursuitController(),
+                ControllerType.ImprovedStanley => new ImprovedStanleyController(),
+                ControllerType.OldStanley => new OldStanleyController(),
                 _ => new BaselineController(), //Baseline is default
             };
 

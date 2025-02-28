@@ -14,8 +14,8 @@ namespace PathTrackingSimulation
 
             //CONTROLLER: Baseline, Stanley or PurePursuit
             // ControllerType selectedController = ControllerType.Baseline;
-            ControllerType selectedController = ControllerType.Stanley;
-            // ControllerType selectedController = ControllerType.PurePursuit;
+            ControllerType selectedController = ControllerType.ImprovedStanley;
+            // ControllerType selectedController = ControllerType.OldStanley;
 
             //PATH SHAPE: straight, curved or zigzag
             // PointF[] selectedPath = PathGenerator.CreateStraightPath(new PointF(50, 300), new PointF(800, 300));

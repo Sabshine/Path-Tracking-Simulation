@@ -4,7 +4,7 @@ using System.Drawing;
 namespace PathTrackingSimulation
 {
     //https://medium.com/roboquest/understanding-geometric-path-tracking-algorithms-stanley-controller-25da17bcc219
-    internal class StanleyController : ILateralController
+    internal class ImprovedStanleyController : ILateralController
     {
         private float _ke = 1.1f;
         private float _kv = 0.1f;
