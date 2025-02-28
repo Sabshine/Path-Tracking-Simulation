@@ -24,6 +24,8 @@ namespace PathTrackingSimulation
         private ControllerType controllerType;
         private ILateralController controller;
 
+        private float carLength = 80f;
+        private float carWidth = 20f;
         private PointF carPosition;
         private float speed;
 
@@ -112,24 +114,31 @@ namespace PathTrackingSimulation
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            //Draw planned path (gray)
+            //Draw planned path
             for (int i = 0; i < path.Length - 1; i++)
             {
                 g.DrawLine(Pens.Gray, path[i], path[i + 1]);
             }
 
-            //Draw driven path (Red)
+            //Draw driven path
             if (drivenPath.Count > 1)
             {
-                g.DrawLines(Pens.Red, drivenPath.ToArray());
+                g.DrawLines(Pens.Blue, drivenPath.ToArray());
             }
 
             //Draw car
             using (Matrix transform = new Matrix())
             {
+                //Rotate around the rear axle (carPosition = rear axle)
                 transform.RotateAt(heading * 180f / (float)Math.PI, carPosition);
                 g.Transform = transform;
-                g.FillRectangle(Brushes.Blue, carPosition.X - 10, carPosition.Y - 5, 20, 10);
+
+                //Draw car, align with rear axle
+                g.FillRectangle(Brushes.Red,
+                    carPosition.X, //Rear axle = rotation center
+                    carPosition.Y - carWidth / 2, //Center width
+                    carLength,
+                    carWidth);
             }
 
             //Show time, deviation & speed in window

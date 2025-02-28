@@ -8,4 +8,4 @@ This branch makes use of System.Windows.Forms to animated the movement of the fo
 Explain here.
 
 ## [Improved ??? Branch]()
-This branch contains an improved version of the ??? controller.
+This branch contains an improved version of the ??? controller. (improved-stanley-simulation)

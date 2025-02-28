@@ -18,9 +18,9 @@ namespace PathTrackingSimulation
             // ControllerType selectedController = ControllerType.PurePursuit;
 
             //PATH SHAPE: straight, curved or zigzag
-            PointF[] selectedPath = PathGenerator.CreateStraightPath(new PointF(50, 300), new PointF(800, 300));
-            // PointF[] selectedPath = PathGenerator.CreateCurvedPath(new PointF(50, 300), new PointF(800, 300));
-            // PointF[] selectedPath = PathGenerator.GenerateZigzagPath(750, 80, 100);
+            // PointF[] selectedPath = PathGenerator.CreateStraightPath(new PointF(50, 300), new PointF(800, 300));
+            PointF[] selectedPath = PathGenerator.CreateCurvedPath(new PointF(50, 300), new PointF(800, 300));
+            // PointF[] selectedPath = PathGenerator.GenerateZigzagPath(750, 80, 50);
 
             //SET SPEED
             float selectedSpeed = 2.0f; //1.0f is 50 px/s
