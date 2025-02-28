@@ -23,7 +23,10 @@ namespace PathTrackingSimulation
             // PointF[] selectedPath = PathGenerator.GenerateZigzagPath(750, 80, 50);
 
             //SET SPEED
-            float selectedSpeed = 0.5f; //1.0f is 50 px/s
+            float selectedSpeed = 0.5f;
+            // float selectedSpeed = 1.0f;
+            // float selectedSpeed = 1.5f;
+            // float selectedSpeed = 2.0f;
 
             //Start application
             Application.Run(new PathTrackingForm(selectedController, selectedPath, selectedSpeed));
