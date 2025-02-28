@@ -36,6 +36,7 @@ namespace PathTrackingSimulation
 
         private float totalDeviation = 0;
         private int deviationSamples = 0;
+         private float maxDeviation = 0;
         
         public PathTrackingForm(ControllerType controllerType, PointF[] customPath, float speed)
         {
@@ -91,8 +92,14 @@ namespace PathTrackingSimulation
             drivenPath.Add(carPosition); //Get driven path
 
             //Save deviation from car to planned path
-            totalDeviation += PathMathHelper.DistanceToPath(carPosition, path);
+            float currentDeviation = PathMathHelper.DistanceToPath(carPosition, path);
+            totalDeviation += currentDeviation;
             deviationSamples++;
+
+            if (currentDeviation > maxDeviation)
+            {
+                maxDeviation = currentDeviation;
+            }
 
             //Go to next target when car is close by enough
             if (PathMathHelper.Distance(carPosition, target) < 10)
@@ -147,12 +154,14 @@ namespace PathTrackingSimulation
             string algorithmText = $"Algoritme: {controllerType}";
             string timeText = $"Tijd: {stopwatch.Elapsed.TotalSeconds:0.00}s";
             string deviationText = $"Gemiddelde Afwijking: {GetAverageDeviation():0.00}px";
+            string maxDeviationText = $"Maximale Afwijking: {maxDeviation:0.00}px";
             string speedText = $"Snelheid: {speed * 50:0.00} px/s";
             
-            g.DrawString(algorithmText, new Font("Arial", 12), Brushes.Black, new PointF(10, 10));
-            g.DrawString(timeText, new Font("Arial", 12), Brushes.Black, new PointF(10, 30));
-            g.DrawString(deviationText, new Font("Arial", 12), Brushes.Black, new PointF(10, 50));
-            g.DrawString(speedText, new Font("Arial", 12), Brushes.Black, new PointF(10, 70));
+            g.DrawString(algorithmText, new Font("Arial", 20), Brushes.Black, new PointF(10, 10));
+            g.DrawString(timeText, new Font("Arial", 18), Brushes.Black, new PointF(10, 50));
+            g.DrawString(deviationText, new Font("Arial", 18), Brushes.Black, new PointF(10, 90));
+            g.DrawString(maxDeviationText, new Font("Arial", 18), Brushes.Black, new PointF(10, 130));
+            g.DrawString(speedText, new Font("Arial", 18), Brushes.Black, new PointF(10, 170));
         }
     }
 }
