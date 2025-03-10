@@ -9,5 +9,5 @@ The three tracking algorithms:
 Dotnet 8.0 is required.
 To run this project use `dotnet` in the terminal.
 
-## [Improved ??? Branch](https://github.com/Sabshine/Path-Tracking-Simulation/tree/improved-stanley-simulation)
-This branch contains an improved version of the Stanley controller. (improved-stanley-simulation)
+## [Improved Stanley Branch](https://github.com/Sabshine/Path-Tracking-Simulation/tree/improved-stanley-simulation)
+This branch contains an improved version of the Stanley controller.
