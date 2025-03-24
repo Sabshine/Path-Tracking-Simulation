@@ -18,29 +18,37 @@ public class MainFormAGV : Form
 
 	public MainFormAGV()
 	{
-			_configManager = new ConfigurationManager();
+			var configManager = new ConfigurationManager();
 
-			//Load full config
-			var allAgvs = _configManager.LoadConfig<List<JsonDevice>>();
-			if (allAgvs != null)
+			//Load devices config
+			JsonDevice[] devices = configManager.LoadDevicesConfig();
+
+			foreach (var device in devices)
 			{
-					//Search AGV348
-					var agv = allAgvs.Find(element => element.name == "AGV348");
-					if (agv != null)
-					{
-							_jsonMotion = agv.JsonMotion;
-							_jsonPid = agv.JsonPid;
-							Console.WriteLine("Config loaded for AGV348!");
-					}
-					else
-					{
-							Console.WriteLine("Config not found for AGV348!");
-					}
+					Console.WriteLine($"Device Name: {device.name}, MAC: {device.mac}");
 			}
-			else
-			{
-					Console.WriteLine("Config could not be loaded!");
-			}
+
+			// //Load full config
+			// var allDevices = _configManager.LoadConfig<List<JsonDevice>>();
+			// if (allDevices != null)
+			// {
+			// 		//Search AGV348
+			// 		var agv = allDevices.Find(element => element.name == "AGV348");
+			// 		if (agv != null)
+			// 		{
+			// 				_jsonMotion = agv.JsonMotion;
+			// 				_jsonPid = agv.JsonPid;
+			// 				Console.WriteLine("Config loaded for AGV348!");
+			// 		}
+			// 		else
+			// 		{
+			// 				Console.WriteLine("Config not found for AGV348!");
+			// 		}
+			// }
+			// else
+			// {
+			// 		Console.WriteLine("Config could not be loaded!");
+			// }
 		}
 	}
 }

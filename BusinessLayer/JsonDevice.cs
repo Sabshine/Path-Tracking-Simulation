@@ -7,7 +7,7 @@ namespace PathTrackingSimulation
     public string mac { get; set; } = "";
     public JsonMotion JsonMotion { get; set; } = new(); //Needed in project to load AGV settings
     public JsonPid JsonPid { get; set; } = new(); //Needed in project to load AGV settings
-    public string cheType { get; set; } = "";
+    // public string cheType { get; set; } = "";
     // public JsonDevicePort[] ports { get; set; } = { };
     // public JsonTag[] tags { get; set; } = { };
     // public JsonConfigValue[] configValues { get; set; } = { };
