@@ -22,7 +22,12 @@ public class ConfigurationManager
         string json = File.ReadAllText(_configFile);
         
         //Deserialize to JsonConfiguration
-        JsonConfiguration config = JsonConvert.DeserializeObject<JsonConfiguration>(json);
+        JsonConfiguration? config = JsonConvert.DeserializeObject<JsonConfiguration>(json);
+        if (config == null)
+        {
+            Console.WriteLine("Error while trying to load Json config.");
+            return Array.Empty<JsonDevice>();
+        }
         
         //Return only devices
         return config?.devices ?? Array.Empty<JsonDevice>();

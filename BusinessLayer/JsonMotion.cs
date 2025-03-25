@@ -2,10 +2,10 @@ namespace PathTrackingSimulation
 {
     public class JsonMotion
     {
-        public double WheelBase { get; set; }
-        public double Width { get; set; }
-        public double MaxSteeringAngle { get; set; }
-        public double Ke { get; set; }
-        public double Kv { get; set; }
+        public double wheelBase { get; set; }
+        public double width { get; set; }
+        public double maxSteeringAngle { get; set; }
+        public double ke { get; set; }
+        public double kv { get; set; }
     }
 }

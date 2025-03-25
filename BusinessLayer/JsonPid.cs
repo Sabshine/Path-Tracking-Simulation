@@ -2,8 +2,8 @@ namespace PathTrackingSimulation
 {
     public class JsonPid
     {
-        public double Kp { get; set; }
-        public double Ki { get; set; }
-        public double Kd { get; set; }
+        public double kp { get; set; }
+        public double ki { get; set; }
+        public double kd { get; set; }
     }
 }
