@@ -74,7 +74,7 @@ namespace PathTrackingSimulation
 			}
 			else
 			{
-					Console.WriteLine("Config not found for " + agvName);
+				Console.WriteLine("Config not found for " + agvName);
 			}
 		}
 	}
