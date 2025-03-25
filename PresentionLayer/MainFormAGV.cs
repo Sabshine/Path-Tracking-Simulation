@@ -2,27 +2,28 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Linq; 
+using LICT.Core.Models.Json;
 
 namespace PathTrackingSimulation
 {
 
 	public class MainFormAGV : Form
 	{
-		private ConfigurationManager _configManager;
+		private AGVConfigManager _configManager;
 		private JsonMotion? _jsonMotion;
 		private JsonPid? _jsonPid;
 		private Button _reloadButton;
 
 		public MainFormAGV()
 		{
-			_configManager = new ConfigurationManager();
+			_configManager = new AGVConfigManager();
 
 			this.Size = new System.Drawing.Size(900, 600);
 			CreateLabel();
 			CreateButton();
 
 			//Load config on start!
-			LoadAGVConfig();
+			LoadAGVConfig("AGV348");
 		}
 
 		private void CreateLabel()
@@ -55,34 +56,25 @@ namespace PathTrackingSimulation
 		{
 			//Reload config when button is clicked
 			Console.WriteLine("Config has been reload!");
-			LoadAGVConfig();
+			LoadAGVConfig("AGV348");
 		}
 
-		private void LoadAGVConfig()
+		private void LoadAGVConfig(string agvName)
 		{
-			//Load full config
-			var allDevices = _configManager.LoadAllDevicesConfig();
+			var settings = _configManager.GetAGVSettings(agvName);
 			
-			if (allDevices != null)
+			if (settings != null)
 			{
-				//Search AGV348
-				var agv = allDevices.ToList().Find(element => element.name == "AGV348");
-				if (agv != null)
-				{
-					_jsonMotion = agv.motionConfig;
-					_jsonPid = agv.pidConfig;
-					Console.WriteLine("Config loaded for AGV348!");
-					Console.WriteLine($"Motion, maxSteeringAngle: {_jsonMotion.maxSteeringAngle}");
-					Console.WriteLine($"PID, Kd: {_jsonPid.kd}");
-				}
-				else
-				{
-					Console.WriteLine("Config not found for AGV348!");
-				}
+				_jsonMotion = settings.MotionConfig;
+				_jsonPid = settings.PidConfig;
+
+				Console.WriteLine("Config loaded for " + agvName);
+				Console.WriteLine($"Motion, maxSteeringAngle: {_jsonMotion.maxSteeringAngle}");
+				Console.WriteLine($"PID, Kd: {_jsonPid.kd}");
 			}
 			else
 			{
-					Console.WriteLine("Config could not be loaded!");
+					Console.WriteLine("Config not found for " + agvName);
 			}
 		}
 	}
