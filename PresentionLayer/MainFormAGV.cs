@@ -37,8 +37,8 @@ public class MainFormAGV : Form
 				var agv = allDevices.ToList().Find(element => element.name == "AGV348");
 				if (agv != null)
 				{
-						_jsonMotion = agv.jsonMotion;
-						_jsonPid = agv.jsonPid;
+						_jsonMotion = agv.motionConfig;
+						_jsonPid = agv.pidConfig;
 						Console.WriteLine("Config loaded for AGV348!");
 						Console.WriteLine($"Motion: {_jsonMotion.maxSteeringAngle}, {_jsonMotion.wheelBase}");
 						Console.WriteLine($"PID: {_jsonPid.kd}");
