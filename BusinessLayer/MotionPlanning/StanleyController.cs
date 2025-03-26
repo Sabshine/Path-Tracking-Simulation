@@ -65,7 +65,7 @@ namespace PathTrackingSimulation
       // float steeringCommand = Math.Clamp(yawDiff + yawDiffCrossTrack, -_maxSteeringAngle, _maxSteeringAngle);
       float steeringCommand = Math.Clamp(NormalizeAngle(yawDiff + yawDiffCrossTrack), -_maxSteeringAngle, _maxSteeringAngle); //Normalise steering angle
       
-      // Toevoegen van wheelbase in de berekening van de stuurhoek
+      //Added wheelbase in calculation of steering angle
       float steeringAdjustment = (float)Math.Atan2(_wheelBase * Math.Sin(steeringCommand), _wheelBase);
       steeringCommand += steeringAdjustment;
 
