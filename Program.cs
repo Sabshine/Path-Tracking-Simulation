@@ -16,9 +16,9 @@ namespace PathTrackingSimulation
             StanleyController stanleyController = new StanleyController(controller);
 
             //PATH SHAPE: straight, curved or zigzag
-            PointF[] selectedPath = PathGenerator.CreateStraightPath(new PointF(50, 300), new PointF(800, 300));
+            // PointF[] selectedPath = PathGenerator.CreateStraightPath(new PointF(50, 300), new PointF(800, 300));
             // PointF[] selectedPath = PathGenerator.CreateCurvedPath(new PointF(50, 300), new PointF(800, 300));
-            // PointF[] selectedPath = PathGenerator.GenerateZigzagPath(750, 80, 50);
+            PointF[] selectedPath = PathGenerator.GenerateZigzagPath(750, 80, 50);
 
             //SET SPEED
             float selectedSpeed = 0.5f;

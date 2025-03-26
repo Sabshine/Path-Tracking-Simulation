@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using LICT.Core.Configuration;
-using LICT.Core.Models.Json;
 using LICT.Core.Models;
 
 namespace PathTrackingSimulation

@@ -1,9 +1,3 @@
-using System;
-using System.Windows.Forms;
-using System.Drawing;
-using System.Linq; 
-using LICT.Core.Models.Json;
-
 namespace PathTrackingSimulation
 {
 
@@ -13,13 +7,10 @@ namespace PathTrackingSimulation
 
 		public Controller()
 		{
-      //Reload================================
 			_configManager = new AGVConfigManager();
 			//Load config on start!
 			LoadAGVSettings("AGV348");
 		}
-
-    //Reload==================================
 						
 		public void ReloadButton_Click(object sender, EventArgs e)
 		{
@@ -34,12 +25,6 @@ namespace PathTrackingSimulation
 			
 			if (settings != null)
 			{
-				// _jsonMotion = settings.MotionConfig;
-				// _jsonPid = settings.PidConfig;
-
-				Console.WriteLine("Config loaded for " + agvName);
-				// Console.WriteLine($"Motion, maxSteeringAngle: {_jsonMotion.maxSteeringAngle}");
-				// Console.WriteLine($"PID, Kd: {_jsonPid.kd}");
         return settings;
 			}
 			else

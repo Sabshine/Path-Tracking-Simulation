@@ -1,5 +1,3 @@
-using System;
-using System.Drawing;
 using LICT.Core.Models.Json;
 
 namespace PathTrackingSimulation
@@ -13,7 +11,8 @@ namespace PathTrackingSimulation
 
     private float _ke;
     private float _kv;
-    // private float _wheelBase = 104f;
+    private float kdamping = 0.5f;
+    private float _wheelBase;
     private float _maxSteeringAngle;
     private float crossTrackError;
 
@@ -43,7 +42,7 @@ namespace PathTrackingSimulation
 
         _ke = (float)_jsonMotion.ke;
         _kv = (float)_jsonMotion.kv;
-        //_wheelBase = 104f = (float)_jsonMotion.wheelBase;
+        _wheelBase = (float)_jsonMotion.wheelBase;
         _maxSteeringAngle = (float)_jsonMotion.maxSteeringAngle;        
 			}
 			else
@@ -61,10 +60,16 @@ namespace PathTrackingSimulation
       crossTrackError = GetCrossTrackError(currentPosition, targetPosition, yawPath); //Calculates perpendicular error
 
       float yawDiffCrossTrack = (float)(-Math.Atan(_ke * crossTrackError / (_kv + speed)));
+      yawDiffCrossTrack *= kdamping;
 
       // float steeringCommand = Math.Clamp(yawDiff + yawDiffCrossTrack, -_maxSteeringAngle, _maxSteeringAngle);
       float steeringCommand = Math.Clamp(NormalizeAngle(yawDiff + yawDiffCrossTrack), -_maxSteeringAngle, _maxSteeringAngle); //Normalise steering angle
+      
+      // Toevoegen van wheelbase in de berekening van de stuurhoek
+      float steeringAdjustment = (float)Math.Atan2(_wheelBase * Math.Sin(steeringCommand), _wheelBase);
+      steeringCommand += steeringAdjustment;
 
+      // Console.WriteLine($"YawDiff: {yawDiff}, CrossTrackError: {crossTrackError}, YawDiffCT: {yawDiffCrossTrack}, SteeringCmd: {steeringCommand}");
       return steeringCommand;
     }
 
