@@ -241,7 +241,7 @@ namespace PathTrackingSimulation
 		{
 			if (_restartButton == null)
 			{
-				// Maak de "Herstart" knop
+				//Draw restart button
 				_restartButton = new Button();
 				_restartButton.Location = new Point(750, 440);
 				_restartButton.Text = "Herstart Simulatie";
@@ -281,16 +281,15 @@ namespace PathTrackingSimulation
 		{
 			if (_reloadButton == null)
 			{
-				// Creating and setting the properties of Button
+				//Draw reload button
 				_reloadButton = new Button();
 				_reloadButton.Location = new Point(750, 500);
 				_reloadButton.Text = "Reload config";
 				_reloadButton.AutoSize = true;
 				_reloadButton.BackColor = Color.LightBlue;
 				_reloadButton.Padding = new Padding(6);
-				_reloadButton.Click += ReloadButton_Click;
+				_reloadButton.Click += ReloadButton_Click; //Using function from this class instead of controller due to having to show Config on UI
 
-				// Adding this button to form
 				this.Controls.Add(_reloadButton);
 			}
 		}
