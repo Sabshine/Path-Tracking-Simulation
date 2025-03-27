@@ -11,7 +11,7 @@ namespace PathTrackingSimulation
 
     private float _ke;
     private float _kv;
-    private float kdamping = 0.5f;
+    private float kdamping = 0.2f;
     private float _wheelBase;
     private float _maxSteeringAngle;
     private float crossTrackError;
@@ -69,6 +69,10 @@ namespace PathTrackingSimulation
       float steeringAdjustment = (float)Math.Atan2(_wheelBase * Math.Sin(steeringCommand), _wheelBase);
       steeringCommand += steeringAdjustment;
 
+      // float adjustmentFactor = 0.1f + (speed / 10f);  // Higher speed means higher adjustment
+      // float steeringAdjustment = (float)Math.Atan2(_wheelBase * Math.Sin(steeringCommand), _wheelBase);
+      // steeringCommand += steeringAdjustment * adjustmentFactor;
+
       // Console.WriteLine($"YawDiff: {yawDiff}, CrossTrackError: {crossTrackError}, YawDiffCT: {yawDiffCrossTrack}, SteeringCmd: {steeringCommand}");
       return steeringCommand;
     }
@@ -79,14 +83,22 @@ namespace PathTrackingSimulation
     //Equation: thetaError + atan(k * crossTrackError / speed)
     //Function is corrected to match "crosstrack_error = np.min(np.sqrt(np.sum((center_axle_current - np.array(waypoints)[:, :2]) ** 2, axis=1)))"
     //It now also accounts for the X in the calculation like the Python reference, but uses cos/sin like the uni paper
-    private float GetCrossTrackError(PointF current, PointF target, float yawPath)
+    public float GetCrossTrackError(PointF current, PointF target, float yawPath)
     {
       // return current.Y < target.Y ? Math.Abs(current.Y - target.Y) : -Math.Abs(current.Y - target.Y);
 
       //Takes perpendicular distance into account instead of just the Y difference
       float dx = current.X - target.X;
       float dy = current.Y - target.Y;
-      return (float)(dx * Math.Sin(yawPath) - dy * Math.Cos(yawPath));             
+      float cte = (float)(dx * Math.Sin(yawPath) - dy * Math.Cos(yawPath));  
+
+      // float maxCTE = 0.1f;  //Maximum for CTE
+      // if (Math.Abs(cte) > maxCTE)
+      // {
+      //     cte = Math.Sign(cte) * maxCTE;
+      // }
+
+      return cte;           
     }
 
     private float NormalizeAngle(float angle)

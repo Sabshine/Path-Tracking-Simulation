@@ -21,7 +21,10 @@ namespace PathTrackingSimulation
             PointF[] selectedPath = PathGenerator.GenerateZigzagPath(750, 80, 50);
 
             //SET SPEED
-            float selectedSpeed = 0.5f;
+            //Real AGV = 10m x 3m
+            //Simulation AGV: 80f by 24f (times 8) 8 px = 1m
+            //Real speed = 2m/s
+            float selectedSpeed = 2.0f;
 
             //Start application
             Application.Run(new PathTrackingForm(stanleyController, controller, selectedPath, selectedSpeed));

@@ -1,6 +1,7 @@
 using System.Drawing.Drawing2D;
 using System.Diagnostics;
 using LICT.Core.Models.Json;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace PathTrackingSimulation
 {
@@ -15,29 +16,29 @@ namespace PathTrackingSimulation
 		private Controller controller;
 
 		private float carLength = 80f;
-		private float carWidth = 20f;
+		private float carWidth = 24f;
 		private PointF carPosition;
 		private float speed;
-		private float currentSteeringAngle = 0f; //Currect steering angle
-		private float steeringResponseSpeed = 0.05f; //How quickly the "wheels" respond
-		private float maxSteeringChange = 0.03f; //max steering angle change per frame
-		private float maxSteeringSpeed = 0.02f; //max steering angle change per frame
-		private float wheelBase = 50f;
+		private float steeringResponseSpeed = 0.07f; //How quickly the "wheels" respond
 
 		private PointF[] path;
 		private List<PointF> drivenPath = new List<PointF>();
 		private float heading = 0f;
 		private int currentTargetIndex = 0;
 
-		private float totalDeviation = 0;
-		private int deviationSamples = 0;
-		private float maxDeviation = 0;
-
 		private Button _restartButton;
-		private bool isConfigReloaded = false;
 		private JsonMotion jsonMotion;
     private JsonPid jsonPid;
 		private Button _reloadButton;
+
+		// Add Kalman
+    private KalmanFilter kalmanFilter = new KalmanFilter();
+    private Matrix<double> state = Matrix<double>.Build.Dense(2, 1, 0); // [x, y]
+    private Matrix<double> errorCovariancePost = Matrix<double>.Build.DenseIdentity(2); // initialise errormatrix
+		private float _correctionFactor = 0.05f; 
+		private float _kalmanDeviation;
+		private List<PointF> kalmanPath = new List<PointF>();
+
 		
 		public PathTrackingForm(StanleyController stanleyController, Controller controller, PointF[] customPath, float speed)
 		{
@@ -89,8 +90,17 @@ namespace PathTrackingSimulation
 
 			PointF target = path[currentTargetIndex];
 
+			//Get predicted position from Kalman filter
+			PointF predictedPosition = new PointF((float)state[0, 0], (float)state[1, 0]);
+			//Calculate deviation betwee actual and predicted position
+			_kalmanDeviation = PathMathHelper.Distance(carPosition, predictedPosition);
+
 			float steeringAngle = motionController.GetSteeringInput(carPosition, heading, target, speed);
 			
+			//Adjust steering based on deviation from predicted path
+			//_correctionFactor = Tuning parameter effects the actual path of the car!!
+			steeringAngle += _correctionFactor * _kalmanDeviation;
+
 			//Using Lerp for smooth rotation towards heading angle
 			heading = Lerp(heading, heading + steeringAngle, steeringResponseSpeed);
 
@@ -100,17 +110,13 @@ namespace PathTrackingSimulation
 					carPosition.Y + (float)Math.Sin(heading) * speed
 			);
 
+			//Update Kalman filter with new current position
+			Matrix<double> measurement = Matrix<double>.Build.Dense(2, 1, new double[] { carPosition.X, carPosition.Y });
+			kalmanFilter.ApplyKalmanFilter(measurement, ref state, ref errorCovariancePost);
+
+			//Add actual and predicted position to driven path/kalman path
 			drivenPath.Add(carPosition); //Get driven path
-
-			//Save deviation from car to planned path
-			float currentDeviation = PathMathHelper.DistanceToPath(carPosition, path);
-			totalDeviation += currentDeviation;
-			deviationSamples++;
-
-			if (currentDeviation > maxDeviation)
-			{
-				maxDeviation = currentDeviation;
-			}
+			kalmanPath.Add(new PointF((float)state[0, 0], (float)state[1, 0]));
 
 			//Go to next target when car is close by enough
 			if (PathMathHelper.Distance(carPosition, target) < 10)
@@ -124,14 +130,6 @@ namespace PathTrackingSimulation
 				return current + (target - current) * t;
 		}
 
-		private float GetAverageDeviation()
-		{
-			if (deviationSamples == 0)
-				return 0;
-			
-			return totalDeviation / deviationSamples;
-		}
-
 		//Drawing onto form ===================================
 		private void DrawScene(object sender, PaintEventArgs e)
 		{
@@ -140,10 +138,15 @@ namespace PathTrackingSimulation
 
 			DrawPath(g);
 			DrawDrivenPath(g);
+			DrawKalmanPath(g);
+
 			DrawCar(g);
+			DrawPredictedCar(g);
+
 			DrawInfo(g);
 			DrawMotionConfig(g);
 			DrawPidConfig(g);
+
 			DrawRestartButton();
 			DrawReloadButton();
 		}
@@ -166,6 +169,31 @@ namespace PathTrackingSimulation
 			}
 		}
 
+		private void DrawKalmanPath(Graphics g)
+		{
+			if (kalmanPath.Count > 1)
+			{
+				Color transparentGreen = Color.FromArgb(128, 0, 255, 0);
+				using (Pen kalmanPen = new Pen(transparentGreen, 2))
+				{
+					kalmanPen.DashStyle = DashStyle.Dash; // Makes it a dashed line
+					g.DrawLines(kalmanPen, kalmanPath.ToArray());
+				}
+			}
+		}
+
+		private void DrawPredictedCar(Graphics g)
+		{
+				using (Matrix transform = new Matrix())
+				{
+						transform.RotateAt(heading * 180f / (float)Math.PI, new PointF((float)state[0, 0], (float)state[1, 0]));
+						g.Transform = transform;
+						
+						Color transparentGreen = Color.FromArgb(128, 0, 255, 0);
+						g.FillRectangle(new SolidBrush(transparentGreen), (float)state[0, 0] - carLength / 2, (float)state[1, 0] - carWidth / 2, carLength, carWidth);
+				}
+		}
+
 		private void DrawCar(Graphics g)
 		{
 				using (Matrix transform = new Matrix())
@@ -186,15 +214,13 @@ namespace PathTrackingSimulation
 
 			string algorithmText = $"Algoritme: {"Stanley"}";
 			string timeText = $"Tijd: {stopwatch.Elapsed.TotalSeconds:0.00}s";
-			string deviationText = $"Gemiddelde Afwijking: {GetAverageDeviation():0.00}px";
-			string maxDeviationText = $"Maximale Afwijking: {maxDeviation:0.00}px";
-			string speedText = $"Snelheid: {speed * 50:0.00} px/s";
+			string kalmanDeviationText = $"Kalman Deviation: {_kalmanDeviation:0.00}px";
+			string crossTrackErrorText = $"Cross Track Error: {motionController.GetCrossTrackError(carPosition, path[currentTargetIndex], heading):0.00} px/s";
 			
 			g.DrawString(algorithmText, new Font("Arial", 14), Brushes.Black, new PointF(10, 10));
 			g.DrawString(timeText, new Font("Arial", 12), Brushes.Black, new PointF(10, 35));
-			g.DrawString(deviationText, new Font("Arial", 12), Brushes.Black, new PointF(10, 55));
-			g.DrawString(maxDeviationText, new Font("Arial", 12), Brushes.Black, new PointF(10, 75));
-			g.DrawString(speedText, new Font("Arial", 12), Brushes.Black, new PointF(10, 95));
+			g.DrawString(kalmanDeviationText, new Font("Arial", 12), Brushes.Black, new PointF(10, 55));
+			g.DrawString(crossTrackErrorText, new Font("Arial", 12), Brushes.Black, new PointF(10, 75));
 		}
 
 		private void DrawMotionConfig(Graphics g)
@@ -207,8 +233,8 @@ namespace PathTrackingSimulation
 				string wheelBaseText = $"wheelBase: {(float)jsonMotion.wheelBase:0.00}";
 				string widthText = $"width: {(float)jsonMotion.width:0.00}";
 				string maxSteeringAngleText = $"maxSteeringAngle: {jsonMotion.maxSteeringAngle:0.00}";
-				string keText = $"ke: {jsonMotion.ke * 50:0.00}";
-				string kvText = $"kv: {jsonMotion.ke * 50:0.00}";
+				string keText = $"ke: {jsonMotion.ke:0.00}";
+				string kvText = $"kv: {jsonMotion.kv:0.00}";
 
 				g.DrawString(motionConfigText, new Font("Arial", 14), Brushes.Black, new PointF(700, 10));
 				g.DrawString(wheelBaseText, new Font("Arial", 12), Brushes.Black, new PointF(700, 35));
@@ -266,12 +292,10 @@ namespace PathTrackingSimulation
 			currentTargetIndex = 0;
 
 			//Reset variables
-			totalDeviation = 0;
-			deviationSamples = 0;
-			maxDeviation = 0;
 			simulationFrozen = false;
 
 			drivenPath.Clear();
+			kalmanPath.Clear();
 
 			//Start simulation
 			stopwatch.Start();
